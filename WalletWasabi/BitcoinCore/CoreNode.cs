@@ -211,6 +211,11 @@ namespace WalletWasabi.BitcoinCore
 					desiredConfigLines.Add($"{configPrefix}.rpcthreads = {coreNodeParams.RpcThreads}");
 				}
 
+				if (coreNodeParams.StartupNotify is { })
+				{
+					desiredConfigLines.Add($"{configPrefix}.startupnotify = \"{coreNodeParams.StartupNotify}\"");
+				}
+
 				var sectionComment = $"# The following configuration options were added or modified by Wasabi Wallet.";
 				// If the comment is not already present.
 				// And there would be new config entries added.
@@ -231,7 +236,7 @@ namespace WalletWasabi.BitcoinCore
 				cancel.ThrowIfCancellationRequested();
 
 				// If it isn't already running, then we run it.
-				if (await coreNode.RpcClient.TestAsync(cancel).ConfigureAwait(false) is null)
+				if (await coreNode.RpcClient.TestAsync().ConfigureAwait(false) is null)
 				{
 					Logger.LogInfo("A Bitcoin node is already running.");
 				}
