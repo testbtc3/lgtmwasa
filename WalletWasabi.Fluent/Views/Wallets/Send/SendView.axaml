@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+             xmlns:behaviors="using:WalletWasabi.Fluent.Behaviors"
+             xmlns:c="using:WalletWasabi.Fluent.Controls"
+             xmlns:vm="using:WalletWasabi.Fluent.ViewModels.Wallets.Send"
+             xmlns:labels="clr-namespace:WalletWasabi.Fluent.Views.Wallets.Labels"
+             mc:Ignorable="d"
+             x:DataType="vm:SendViewModel"
+             x:CompileBindings="True"
+             x:Class="WalletWasabi.Fluent.Views.Wallets.Send.SendView">
+  <c:ContentArea Title="Send" Caption=""
+                 EnableBack="{Binding EnableBack}"
+                 EnableNext="True"
+                 NextContent="Continue"
+                 EnableCancel="{Binding EnableCancel}"
+                 IsBusy="{Binding IsBusy}"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+    <DockPanel>
+      <DockPanel.Styles>
+        <Style Selector="DockPanel > Label">
+          <Setter Property="MinWidth" Value="80" />
+        </Style>
+      </DockPanel.Styles>
+      <!-- To -->
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+        <Label DockPanel.Dock="Left" Content="_To:" Target="toTb" />
+        <TextBox x:Name="toTb" MaxLength="250" Text="{Binding To}"
+                 Watermark="(e.g. Bitcoin address or PayJoin URL)">
+          <i:Interaction.Behaviors>
+            <behaviors:FocusOnAttachedBehavior />
+            <behaviors:ExecuteCommandOnActivated Command="{Binding AutoPasteCommand}" />
+            <behaviors:FocusNextWhenValid />
+          </i:Interaction.Behaviors>
+          <TextBox.InnerRightContent>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="10" Margin="10 0">
+              <c:AnimatedButton KeyboardNavigation.IsTabStop="False"
+                                Focusable="False"
+                                Command="{Binding PasteCommand}"
+                                ToolTip.Tip="Paste"
+                                NormalIcon="{StaticResource paste_regular}"
+                                ClickIcon="{StaticResource copy_confirmed}" />
+              <c:AnimatedButton IsVisible="{Binding IsQrButtonVisible}"
+                                KeyboardNavigation.IsTabStop="False"
+                                Focusable="False"
+                                Command="{Binding QRCommand}"
+                                ToolTip.Tip="Scan QR Code"
+                                NormalIcon="{StaticResource qr_code_regular}" />
+            </StackPanel>
+          </TextBox.InnerRightContent>
+        </TextBox>
+      </DockPanel>
+      <!-- Amount -->
+      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+        <Label DockPanel.Dock="Left" Content="_Amount:" Target="amountTb" />
+        <DockPanel>
+          <Image Width="120" Source="avares://WalletWasabi.Fluent/Assets/TechnologyLogos/payjoin.png"
+                 DockPanel.Dock="Right" IsVisible="{Binding IsPayJoin}" Margin="0 8 8 0" VerticalAlignment="Top" />
+          <c:CurrencyEntryBox KeyboardNavigation.IsTabStop="{Binding !IsFixedAmount}" x:Name="amountTb"
+                              IsReadOnly="{Binding IsFixedAmount}" AmountBtc="{Binding AmountBtc}"
+                              ConversionRate="{Binding ExchangeRate}" ConversionCurrencyCode="USD" />
+        </DockPanel>
+      </DockPanel>
+      <!-- Labels -->
+      <DockPanel DockPanel.Dock="Top"
+                 VerticalAlignment="Top"
+                 Margin="0,0,0,10">
+        <Label DockPanel.Dock="Left" Content="_Labels:" Target="LabelTagBox" />
+        <c:TagsBox x:Name="LabelTagBox"
+                   DataContext="{Binding SuggestionLabels}"
+                   VerticalAlignment="Top"
+                   Watermark="{StaticResource LabelsWatermarkText}"
+                   TagSeparator=","
+                   SuggestionsAreCaseSensitive="True"
+                   RestrictInputToSuggestions="False"
+                   Items="{Binding Labels}"
+                   TopItems="{Binding TopSuggestions}"
+                   Suggestions="{Binding Suggestions}"
+                   MaxTextLength="{StaticResource MaxLabelLength}"
+                   IsCurrentTextValid="{Binding IsCurrentTextValid, Mode=OneWayToSource}" />
+      </DockPanel>
+    </DockPanel>
+  </c:ContentArea>
+</UserControl>
